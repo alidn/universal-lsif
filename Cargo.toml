@@ -1,0 +1,21 @@
+[package]
+name = "universal-lsif"
+version = "0.1.0"
+authors = ["alidn <ali.nili128@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow = "*"
+languageserver-types = "*"
+jsonrpc-lite = "*"
+serde_json = "*"
+serde = "*"
+structopt = "*"
+serde_derive = "*"
+url_serde = "*"
+ignore = "*"
+indicatif = "0.15.0"
+toml = "0.5.8"
+rayon = "*"
