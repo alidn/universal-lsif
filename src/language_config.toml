@@ -1,7 +1,4 @@
 [typescript]
-start_command = "typescript-language-server"
-start_args = ["--stdio"]
-installation_command = "npm install -g typescript-language-server"
 extensions = ["ts", "tsx"]
 keywords = ["break", "as", "any", "case", "implements", "boolean",
             "catch", "interface", "constructor", "class", "let",
@@ -12,9 +9,6 @@ keywords = ["break", "as", "any", "case", "implements", "boolean",
             "extends", "of", "false"]
 
 [javascript]
-start_command = "typescript-language-server"
-start_args = ["--stdio"]
-installation_command = "npm install -g typescript-language-server"
 extensions = ["js", "jsx"]
 keywords = ["break", "as", "any", "case", "implements", "boolean",
             "catch", "interface", "constructor", "class", "let",
@@ -25,8 +19,6 @@ keywords = ["break", "as", "any", "case", "implements", "boolean",
             "extends", "of", "false"]
 
 [rust]
-start_command = "rust-analyzer"
-start_args = []
 extensions = ["rs"]
 keywords = ["as", "async", "use", "await", "break", "const",
             "continue", "crate", "dyn", "else", "if", "let", 
@@ -37,9 +29,6 @@ keywords = ["as", "async", "use", "await", "break", "const",
             "use", "where", "while"]
 
 [go]
-start_command = "gopls"
-start_args = []
-installation_command = "`go get golang.org/x/tools/gopls@vX.Y.Z`"
 extensions = ["go"]
 keywords = ["go", "func", "type", "struct", "interface", "default", 
             "select", "case", "defer", "map", "chan", "else", "goto", 
@@ -47,9 +36,6 @@ keywords = ["go", "func", "type", "struct", "interface", "default",
             "continue", "for", "import", "return", "var"]
 
 [ruby]
-start_command = "solargraph"
-start_args = ["stdio"]
-installation_command = "gem install solargraph"
 extensions = ["rb"]
 keywords = ["BEGIN", "END", "alias", "and", "begin", "break", "case",
             "class", "def", "module", "next", "nil", "not", "or", "redo",
@@ -58,8 +44,49 @@ keywords = ["BEGIN", "END", "alias", "and", "begin", "break", "case",
             "then", "until", "when", "while", "defined?", "self", "yield"]
 
 [ocaml]
-start_command = "opam"
-start_args = ["init"]
-installation_command = "opam install ocaml-lsp-server"
 extensions = ["ml"]
+keywords = []
+
+[python]
+extensions = ["py"]
+keywords = []
+
+[cpp]
+extensions = ["cpp"]
+keywords = []
+
+[java]
+extensions = ["java"]
+keywords = []
+
+[csharp]
+extensions = ["cs"]
+keywords = []
+
+[swift]
+extensions = ["swift"]
+keywords = []
+
+[scala]
+extensions = ["scala", "sc"]
+keywords = []
+
+[kotlin]
+extensions = ["kt"]
+keywords = [""]
+
+[elixir]
+extensions = ["ex"]
+keywords = []
+
+[dart]
+extensions = ["dart"]
+keywords = []
+
+[graphql]
+extensions = ["graphql"]
+keywords = []
+
+[php]
+extensions = ["php"]
 keywords = []

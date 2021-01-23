@@ -11,11 +11,17 @@ use crate::protocol::types::Language;
     about = "An LSIF indexer for every language (use --langs to see supported language)"
 )]
 pub struct Args {
-    /// Specifies the directory to index.
-    #[structopt(parse(from_os_str))]
-    pub project_root: PathBuf,
+    /// Command for starting the language server.
+    /// This client and the server communicate over stdin.
+    pub init_server_command: String,
     /// Specifies the language
     pub language: String,
+    /// Optional arguments for running the language server.
+    #[structopt(short, long)]
+    pub server_args: Option<String>,
+    /// Path to the root of the project, or the current directory if not present.
+    #[structopt(parse(from_os_str))]
+    pub project_root: Option<PathBuf>,
     /// The output file, `dump.json` if not present.
     #[structopt(short, long, parse(from_os_str))]
     pub output: Option<PathBuf>,
@@ -23,11 +29,25 @@ pub struct Args {
 
 impl Args {
     pub fn canonicalize_paths(&mut self) {
-        self.project_root = self.project_root.canonicalize().unwrap();
-        self.output = Some(self.output.as_ref().map_or(
-            normalize_path(&self.project_root.join(PathBuf::from("dump.json"))),
-            |p| normalize_path(p),
-        ));
+        self.project_root = Some(
+            self.project_root
+                .clone()
+                .unwrap_or(PathBuf::from("."))
+                .canonicalize()
+                .unwrap(),
+        );
+        self.output = Some(
+            self.output.as_ref().map_or(
+                normalize_path(
+                    &self
+                        .project_root
+                        .clone()
+                        .unwrap()
+                        .join(PathBuf::from("dump.json")),
+                ),
+                |p| normalize_path(p),
+            ),
+        );
     }
 }
 

@@ -12,7 +12,8 @@ mod rust {
     fn get_client() -> Result<LSClient> {
         let config = language_configs()["rust"].clone();
         Ok(LSClient::spawn_server(
-            config,
+            "rust-analyzer".into(),
+            None,
             PathBuf::from("/Users/zas/space/universal-lsif/src/tests/test_data/rust"),
         )
         .unwrap()
@@ -79,7 +80,8 @@ mod go {
     fn get_client() -> Result<LSClient> {
         let config = language_configs()["go"].clone();
         Ok(LSClient::spawn_server(
-            config,
+            "gopls".into(),
+            None,
             PathBuf::from("/Users/zas/space/universal-lsif/src/tests/test_data/go"),
         )
         .unwrap()

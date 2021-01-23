@@ -231,7 +231,7 @@ where
             version: "0.1".into(),
             position_encoding: "utf-16".into(),
             tool_info: Some(self.tool_info.clone()),
-            project_root: Url::from_directory_path(&self.opt.project_root).unwrap(),
+            project_root: Url::from_directory_path(&self.opt.project_root.clone().unwrap()).unwrap(),
         });
     }
 
@@ -256,7 +256,7 @@ where
         }
 
         let exs = self.config.extensions.clone();
-        let res = paths(&self.opt.project_root, exs);
+        let res = paths(&self.opt.project_root.clone().unwrap(), exs);
         self.cached_file_paths = Some(res.clone());
         res
     }

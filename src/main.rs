@@ -25,46 +25,32 @@ use lsp::{LSClient, LSConfig};
 use structopt::{clap::crate_authors, StructOpt};
 
 fn main() {
-    let args = env::args();
-    // A hack to avoid sub-commands
-    for arg in args {
-        if &arg == "--langs" {
-            println!("Supported languages:");
-            for (language, config) in language_configs() {
-                println!("    - {} using `{}`", language, config.start_command);
-            }
-            return;
-        }
-    }
-
     let mut args: Args = Args::from_args();
     args.canonicalize_paths();
 
     let config = match language_configs().get(&args.language) {
         Some(c) => c.clone(),
         None => {
-            println!("\nLanguage not found, you can see the supported language using `universal-lsif --langs`");
+            eprintln!("Failed: Language not found.");
             return;
         }
     };
 
-    let (client, lsp_proc) = match LSClient::spawn_server(config.clone(), args.project_root.clone())
-    {
+    let (client, lsp_proc) = match LSClient::spawn_server(
+        args.init_server_command.clone(),
+        args.server_args.clone(),
+        args.project_root.clone().unwrap(),
+    ) {
         Ok(c) => c,
         Err(err) => {
-            if let Some(installation_command) = &config.installation_command {
-                println!("\n{}\nIf you haven't installed the language server, you can install it using `{}`", err, installation_command);
-            } else {
-                println!(
-                    "\n{}\n Make sure you have installed the right language server: `{}`\n`",
-                    err, config.start_command
-                );
-            }
+            eprintln!("Failed: {}", err);
             return;
         }
     };
 
-    std::thread::sleep_ms(2000);
+    // A hack to make sure the server is initialized
+    std::thread::sleep(std::time::Duration::from_millis(1500));
+
     crawler::traverse(args, client, config).unwrap();
     lsp_proc.join().unwrap();
 }

@@ -28,28 +28,33 @@ mod parse_helpers;
 /// A language-server client.
 pub struct LSClient {
     pub message_rx: Receiver<String>,
-    config: LSConfig,
     writer: Box<dyn Write + Send>,
     next_id: u64,
 }
 
 impl LSClient {
-    pub fn spawn_server(config: LSConfig, root_path: PathBuf) -> Result<(Self, JoinHandle<()>)> {
-        let mut process = Command::new(config.start_command.clone())
-            .args(config.start_args.clone())
+    pub fn spawn_server(
+        start_command: String,
+        start_args: Option<String>,
+        root_path: PathBuf,
+    ) -> Result<(Self, JoinHandle<()>)> {
+        let args = start_args
+            .map(|it| {
+                let split = it.split(' ').map(|it| it.to_string()).collect::<Vec<_>>();
+                split
+            })
+            .unwrap_or(Vec::new());
+        let mut process = Command::new(start_command)
+            .args(args)
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
             .spawn()
-            .context(format!(
-                "Failed to spawn the language server with command: `{}`",
-                config
-            ))?;
+            .context(format!("Failed to spawn the language server with command"))?;
 
         let mut stdout = process.stdout;
 
         let (message_tx, message_rx) = channel();
 
-        let c = config.clone();
         let lsp_proc = std::thread::Builder::new()
             .name("lsp-stdout-looper".into())
             .spawn(move || {
@@ -70,7 +75,6 @@ impl LSClient {
         let writer = Box::new(BufWriter::new(process.stdin.take().unwrap()));
 
         let mut ls_client = Self {
-            config: c,
             writer,
             message_rx,
             next_id: 0,
@@ -229,21 +233,8 @@ fn prepare_lsp_json(msg: &Value) -> Result<String, serde_json::error::Error> {
 /// Configuration info for running a language server.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct LSConfig {
-    pub start_command: String,
-    pub start_args: Vec<String>,
-    pub installation_command: Option<String>,
     pub extensions: Vec<String>,
     pub keywords: HashSet<String>,
-}
-
-impl std::fmt::Display for LSConfig {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let args = self
-            .start_args
-            .iter()
-            .fold(String::new(), |acc, arg| format!("{} {}", acc, arg));
-        write!(f, "{} {}", self.start_command, args)
-    }
 }
 
 fn number_from_id(id: &Id) -> u64 {

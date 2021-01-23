@@ -36,10 +36,12 @@ pub fn traverse(args: Args, mut client: LSClient, config: LSConfig) -> Result<()
         Indexer::index(a, c, file_emitter, def_rx, ref_rx)
     });
 
-    let pb = ProgressBar::new(paths(&args.project_root, config.extensions.clone()).len() as u64);
+    let pb = ProgressBar::new(
+        paths(&args.project_root.clone().unwrap(), config.extensions.clone()).len() as u64,
+    );
     pb.set_message("Waiting for the language server to finish indexing");
 
-    for p in paths(&args.project_root, config.extensions.clone()) {
+    for p in paths(&args.project_root.clone().unwrap(), config.extensions.clone()) {
         let text = std::fs::read_to_string(&p).unwrap();
 
         client.set_document(&p, text.clone());
