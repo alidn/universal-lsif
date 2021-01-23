@@ -12,7 +12,9 @@ use languageserver_types::{
     request::GotoDefinitionResponse, Position, Range as LspRange, TextDocumentIdentifier,
     TextDocumentPositionParams, Url,
 };
+use lazy_static::lazy_static;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
+use regex::Regex;
 
 use crate::{
     cli::Args,
@@ -123,41 +125,22 @@ pub fn traverse(args: Args, mut client: LSClient, config: LSConfig) -> Result<()
 fn get_words(text: String) -> Vec<(String, LspRange)> {
     let mut res = Vec::new();
     for (idx, line) in text.split('\n').enumerate() {
-        let (mut l, mut r) = (0, 0);
-        let mut is_word = false;
-        let chars = line.chars().collect::<Vec<_>>();
-        loop {
-            if r == chars.len() {
-                break;
-            }
+        lazy_static! {
+            static ref RE: Regex = Regex::new("\\w+(?:'\\w+)*").unwrap();
+        }
 
-            let ch = chars[r];
-            if ch.is_alphabetic() || ch == '_' {
-                if !is_word {
-                    l = r;
-                }
-                is_word = true;
-            } else {
-                let word = line.get(l..r).unwrap_or("");
-                if is_word {
-                    res.push((
-                        word.to_string(),
-                        LspRange {
-                            start: Position {
-                                line: idx as u64,
-                                character: l as u64,
-                            },
-                            end: Position {
-                                line: idx as u64,
-                                character: r as u64,
-                            },
-                        },
-                    ))
-                }
-                l = r + 1;
-                is_word = false;
-            }
-            r += 1;
+        for m in RE.find_iter(line) {
+            let range = LspRange {
+                start: Position {
+                    line: idx as u64,
+                    character: m.start() as u64,
+                },
+                end: Position {
+                    line: idx as u64,
+                    character: m.end() as u64,
+                },
+            };
+            res.push((m.as_str().to_string(), range));
         }
     }
     res
@@ -311,6 +294,33 @@ mod tests {
             .into_iter()
             .map(|it| it.to_string())
             .collect::<Vec<_>>()
+        );
+    }
+
+    #[test]
+    fn test_for_each_word_2() {
+        let text = r#"
+        type a struct {
+            b   c.d
+            e f
+            g        h
+        }
+        "#;
+        let mut words = Vec::new();
+        get_words(text.to_string())
+            .into_iter()
+            .try_for_each(|(word, _range)| -> Result<()> {
+                words.push(word.to_string());
+                Ok(())
+            })
+            .unwrap();
+
+        assert_eq!(
+            words,
+            vec!["type", "a", "struct", "b", "c", "d", "e", "f", "g", "h"]
+                .into_iter()
+                .map(|it| it.to_string())
+                .collect::<Vec<_>>()
         );
     }
 }
