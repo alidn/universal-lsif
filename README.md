@@ -1,12 +1,8 @@
 # Universal LSIF 
 A cli tool for generating LSIF data for any language using a language server.
 
-## Usage
-After installing it on your `$PATH` and installing the requierd language server, run it like the following (run --help for more information):
-
-`universal-lsif language-server-name language-name-lowercase path-to-repo`
-
-For TypeScript/JavaScript, you can run the following (note that this client and the server communicate over stdin):
+## Example Usage
+For TypeScript/JavaScript, you can run the following (note that this client and the server communicate over stdio):
 
 `universal-lsif typescript-language-server --server-args="--stdio" javascript path/to/repo`
 
@@ -19,6 +15,6 @@ language server for finding the definition of every symbol over stdin, and gener
 
 ## Limitations
 It currently only emits data for definitions and references.
-Also, The current implementation is very naive, but ultimately, it will still be slow.
+Also, The current implementation is very naive, but ultimately, it will be slow.
 For a fast but imprecise alternative look at [`lsif-os`](https://github.com/alidn/lsif-os).
 
