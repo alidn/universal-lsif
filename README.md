@@ -2,11 +2,11 @@
 A cli tool for generating LSIF data for any language using a language server.
 
 ## Example Usage
-For TypeScript/JavaScript, you can run the following (note that this client and the server communicate over stdio):
+### TypeScript/JavaScript (note that this client and the server communicate over stdio):
 
 `universal-lsif typescript-language-server --server-args="--stdio" javascript path/to/repo`
 
-For Rust:
+### Rust:
 `universal-lsif rust-analyzer rust .`
 
 ## How it works
