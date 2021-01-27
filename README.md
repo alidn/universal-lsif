@@ -15,6 +15,6 @@ language server for finding the definition of every symbol over stdin, and gener
 
 ## Limitations
 It currently only emits data for definitions and references.
-Also, The current implementation is very naive, but ultimately, it will be slow.
+Also, The current implementation is very naive, but ultimately, it will remain be slow.
 For a fast but imprecise alternative look at [`lsif-os`](https://github.com/alidn/lsif-os).
 
